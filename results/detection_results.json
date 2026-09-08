@@ -1,0 +1,186 @@
+[
+  {
+    "model": "Correct",
+    "pattern": "BP1_MissingCert",
+    "found": false,
+    "inputs": null,
+    "observed": null,
+    "time_s": 0.001268399995751679,
+    "am_states": 80,
+    "inter_states": 0
+  },
+  {
+    "model": "Correct",
+    "pattern": "BP2_MissingCertVer",
+    "found": false,
+    "inputs": null,
+    "observed": null,
+    "time_s": 0.0011946999875362962,
+    "am_states": 80,
+    "inter_states": 0
+  },
+  {
+    "model": "Correct",
+    "pattern": "BP3_CertVerBeforeCKE",
+    "found": false,
+    "inputs": null,
+    "observed": null,
+    "time_s": 0.0011770999990403652,
+    "am_states": 80,
+    "inter_states": 0
+  },
+  {
+    "model": "MissingCert",
+    "pattern": "BP1_MissingCert",
+    "found": true,
+    "inputs": [
+      "CH",
+      "CH",
+      "CertE",
+      "CKE",
+      "CertVer",
+      "CCS_c",
+      "Fin"
+    ],
+    "observed": [
+      "CH",
+      "HVR",
+      "CH",
+      "SH",
+      "CertReq",
+      "SHD",
+      "CertE",
+      "CKE",
+      "CertVer",
+      "CCS_c",
+      "Fin",
+      "CCS_s",
+      "Fin_s"
+    ],
+    "time_s": 0.003463799992459826,
+    "am_states": 71,
+    "inter_states": 23
+  },
+  {
+    "model": "MissingCert",
+    "pattern": "BP2_MissingCertVer",
+    "found": false,
+    "inputs": null,
+    "observed": null,
+    "time_s": 0.0013182999973651022,
+    "am_states": 71,
+    "inter_states": 0
+  },
+  {
+    "model": "MissingCert",
+    "pattern": "BP3_CertVerBeforeCKE",
+    "found": false,
+    "inputs": null,
+    "observed": null,
+    "time_s": 0.0010352000099373981,
+    "am_states": 71,
+    "inter_states": 0
+  },
+  {
+    "model": "MissingCertVer",
+    "pattern": "BP1_MissingCert",
+    "found": false,
+    "inputs": null,
+    "observed": null,
+    "time_s": 0.001160100000561215,
+    "am_states": 79,
+    "inter_states": 0
+  },
+  {
+    "model": "MissingCertVer",
+    "pattern": "BP2_MissingCertVer",
+    "found": true,
+    "inputs": [
+      "CH",
+      "CH",
+      "Cert",
+      "CKE",
+      "CCS_c",
+      "Fin"
+    ],
+    "observed": [
+      "CH",
+      "HVR",
+      "CH",
+      "SH",
+      "CertReq",
+      "SHD",
+      "Cert",
+      "CKE",
+      "CCS_c",
+      "Fin",
+      "CCS_s",
+      "Fin_s"
+    ],
+    "time_s": 0.002997600007802248,
+    "am_states": 79,
+    "inter_states": 22
+  },
+  {
+    "model": "MissingCertVer",
+    "pattern": "BP3_CertVerBeforeCKE",
+    "found": false,
+    "inputs": null,
+    "observed": null,
+    "time_s": 0.0013847999944118783,
+    "am_states": 79,
+    "inter_states": 0
+  },
+  {
+    "model": "CertVerBeforeCKE",
+    "pattern": "BP1_MissingCert",
+    "found": false,
+    "inputs": null,
+    "observed": null,
+    "time_s": 0.001259800003026612,
+    "am_states": 87,
+    "inter_states": 0
+  },
+  {
+    "model": "CertVerBeforeCKE",
+    "pattern": "BP2_MissingCertVer",
+    "found": false,
+    "inputs": null,
+    "observed": null,
+    "time_s": 0.0012621000059880316,
+    "am_states": 87,
+    "inter_states": 0
+  },
+  {
+    "model": "CertVerBeforeCKE",
+    "pattern": "BP3_CertVerBeforeCKE",
+    "found": true,
+    "inputs": [
+      "CH",
+      "CH",
+      "Cert",
+      "CertVer",
+      "CKE",
+      "CCS_c",
+      "Fin"
+    ],
+    "observed": [
+      "CH",
+      "HVR",
+      "CH",
+      "SH",
+      "CertReq",
+      "SHD",
+      "Cert",
+      "CertVer",
+      "CKE",
+      "CCS_c",
+      "Fin",
+      "CCS_s",
+      "Fin_s"
+    ],
+    "time_s": 0.003397599997697398,
+    "am_states": 87,
+    "inter_states": 23
+  }
+]
