@@ -1,7 +1,7 @@
 """
 DFA intersection via cross-product construction.
 
-Paper reference: Section IV — A_∩ = A_M ∩ A_bug
+Paper reference: Section IV: A_∩ = A_M ∩ A_bug
 
 A_∩ = (Sigma, Q_M x Q_b, (q0_M, q0_b), Delta', Q_M x F_b)
 

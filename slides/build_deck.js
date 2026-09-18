@@ -47,7 +47,7 @@ function headerBand(slide, text) {
 
 function footer(slide, n) {
   slide.addText(
-    'COE 576 Networks & Web Security  |  Bless Elikem Krapah  |  KNUST  |  ' + n + '/12',
+    'COE 576 Networks & Web Security  |  Bless Elikem Krapah  |  KNUST  |  ' + n + '/13',
     { x: 0, y: H - 0.22, w: W, h: 0.22, color: C.muted, fontSize: 7, align: 'center' }
   );
 }
@@ -578,7 +578,50 @@ const RES = path.join(__dirname, '..', 'results');
 }
 
 // ────────────────────────────────────────────────────────────────────────
-// SLIDE 12 — Conclusion (dark)
+// SLIDE 12 — Limitations
+// ────────────────────────────────────────────────────────────────────────
+{
+  const s = pres.addSlide();
+  bgRect(s);
+  headerBand(s, 'Limitations of This Replication');
+
+  const lims = [
+    {
+      title: 'Mock SUTs, not real servers',
+      body:  'Real paper tested OpenSSL, GnuTLS, WolfSSL, etc. This replication uses hand-written\nPython state machines that precisely embed the known bugs. Results are deterministic, not probabilistic.'
+    },
+    {
+      title: 'Models analytically constructed',
+      body:  'The paper learns Mealy machines via active automata learning (L*/TTT). Here, models are\nbuilt directly from SUT code. The intersection and Algorithm 1 are faithful; the learning step is not.'
+    },
+    {
+      title: 'Three bug patterns only',
+      body:  'The paper covers more bug classes across DTLS and SSH. Only BP1, BP2, BP3 are implemented\nhere; extending to new protocols requires new hand-crafted bug-pattern DFAs.'
+    },
+    {
+      title: 'No scalability or robustness data',
+      body:  'The paper reports learning times (hours) and model sizes for 12 real implementations.\nThis replication has no learning overhead, so timing comparisons are not meaningful.'
+    },
+  ];
+
+  lims.forEach(function(lim, i) {
+    const y = 0.88 + i * 1.08;
+    card(s, 0.35, y, 9.3, 0.96, C.light);
+    s.addText(lim.title, {
+      x: 0.55, y: y + 0.06, w: 9.0, h: 0.26,
+      color: C.primary, fontSize: 11, bold: true
+    });
+    s.addText(lim.body, {
+      x: 0.55, y: y + 0.36, w: 9.0, h: 0.52,
+      color: C.navy, fontSize: 10
+    });
+  });
+
+  footer(s, 12);
+}
+
+// ────────────────────────────────────────────────────────────────────────
+// SLIDE 13 — Conclusion (dark)
 // ────────────────────────────────────────────────────────────────────────
 {
   const s = pres.addSlide();
@@ -619,6 +662,7 @@ const RES = path.join(__dirname, '..', 'results');
     'COE 576 Networks and Web Security  |  KNUST MPhil  |  September 2026  |  Bless Elikem Krapah',
     { x: 0, y: H - 0.25, w: W, h: 0.25, color: C.muted, fontSize: 7.5, align: 'center' }
   );
+  footer(s, 13);
 }
 
 // ── Write output ──────────────────────────────────────────────────────────

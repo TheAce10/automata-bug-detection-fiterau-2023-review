@@ -1,7 +1,7 @@
 """
 Bug detection algorithm.
 
-Paper reference: Section V — Algorithm 1
+Paper reference: Section V: Algorithm 1
 
 Given the intersection automaton A_∩ = A_M ∩ A_bug, Algorithm 1 performs a
 backward BFS from the accepting states of A_∩ to find sequences that both

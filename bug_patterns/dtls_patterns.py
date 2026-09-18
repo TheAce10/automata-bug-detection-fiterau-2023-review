@@ -1,7 +1,7 @@
 """
 Bug pattern DFAs for DTLS mutual-authentication handshake bugs.
 
-Paper reference: Section V — "Bug patterns are formalised as DFAs A_b over
+Paper reference: Section V: "Bug patterns are formalised as DFAs A_b over
 Sigma = I U O.  A_b accepts a sequence w iff w provides evidence of the
 corresponding bug."
 
@@ -10,9 +10,9 @@ sequence exhibits the bug.  Transitions on symbols not mentioned loop back
 to the same state (universal catch-all).
 
 Bugs modelled (matching paper Table I / Figs 4–7):
-  BP1  Missing Certificate    — server completes HS without Cert from client
-  BP2  Missing CertVer        — server completes HS without CertVer from client
-  BP3  CertVer before CKE     — server accepts CertVer before CKE
+  BP1  Missing Certificate    - server completes HS without Cert from client
+  BP2  Missing CertVer        - server completes HS without CertVer from client
+  BP3  CertVer before CKE     - server accepts CertVer before CKE
 """
 
 import sys
@@ -44,15 +44,15 @@ def _build_dfa(states, initial, accepting, overrides):
 
 
 # ---------------------------------------------------------------------------
-# BP1 — Missing Certificate  (paper Fig. 4)
+# BP1: Missing Certificate  (paper Fig. 4)
 #
 # Accepts sequences where CertReq appears, then CCS_s appears, with no Cert
 # between them.
 #
 # States:
-#   init     — initial
-#   certreq  — CertReq seen; waiting for Cert or CCS_s
-#   bug      — CCS_s seen without intervening Cert  (ACCEPTING)
+#   init     - initial
+#   certreq  - CertReq seen; waiting for Cert or CCS_s
+#   bug      - CCS_s seen without intervening Cert  (ACCEPTING)
 # ---------------------------------------------------------------------------
 
 bp1_missing_cert = _build_dfa(
@@ -68,15 +68,15 @@ bp1_missing_cert = _build_dfa(
 
 
 # ---------------------------------------------------------------------------
-# BP2 — Missing CertificateVerify  (paper Fig. 5)
+# BP2: Missing CertificateVerify  (paper Fig. 5)
 #
 # Accepts sequences where Cert appears, then CCS_s appears, with no CertVer
 # between them.
 #
 # States:
-#   init   — initial
-#   cert   — Cert seen; waiting for CertVer or CCS_s
-#   bug    — CCS_s seen without CertVer  (ACCEPTING)
+#   init   - initial
+#   cert   - Cert seen; waiting for CertVer or CCS_s
+#   bug    - CCS_s seen without CertVer  (ACCEPTING)
 # ---------------------------------------------------------------------------
 
 bp2_missing_certver = _build_dfa(
@@ -92,15 +92,15 @@ bp2_missing_certver = _build_dfa(
 
 
 # ---------------------------------------------------------------------------
-# BP3 — CertificateVerify before ClientKeyExchange  (paper Fig. 7)
+# BP3: CertificateVerify before ClientKeyExchange  (paper Fig. 7)
 #
 # Accepts sequences where CertVer precedes CKE, and then CCS_s appears.
 #
 # States:
-#   init      — initial
-#   certver   — CertVer seen (without prior CKE in this "run")
-#   cke_after — CKE seen after CertVer — wrong ordering established
-#   bug       — CCS_s seen after the wrong-order pair  (ACCEPTING)
+#   init      - initial
+#   certver   - CertVer seen (without prior CKE in this "run")
+#   cke_after - CKE seen after CertVer, wrong ordering established
+#   bug       - CCS_s seen after the wrong-order pair  (ACCEPTING)
 # ---------------------------------------------------------------------------
 
 bp3_certver_before_cke = _build_dfa(

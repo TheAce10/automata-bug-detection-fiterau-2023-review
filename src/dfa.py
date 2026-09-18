@@ -1,7 +1,7 @@
 """
 Deterministic Finite Automaton implementation.
 
-Paper reference: Section IV — "Bug patterns are formalised as DFAs A_b over
+Paper reference: Section IV: "Bug patterns are formalised as DFAs A_b over
 the combined input/output alphabet I U O.  A_b accepts a sequence w iff w
 exhibits the corresponding bug."
 

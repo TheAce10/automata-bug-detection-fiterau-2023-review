@@ -1,7 +1,7 @@
 """
 Mealy Machine → DFA conversion.
 
-Paper reference: Section VI — Definition of A_M.
+Paper reference: Section VI: Definition of A_M.
 
 Given a Mealy machine M = (I, O, Q, q0, delta, lambda), the DFA A_M is
 constructed so that L(A_M) equals the set of all input/output sequences that

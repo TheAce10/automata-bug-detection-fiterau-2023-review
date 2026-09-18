@@ -77,7 +77,7 @@ def fig_matrix(results):
     for i in range(nrows):
         for j in range(ncols):
             val = mat[i, j]
-            txt = "BUG" if val > 0.5 else "—"
+            txt = "BUG" if val > 0.5 else "-"
             color = "white" if val > 0.5 else "#555555"
             ax.text(j, i, txt, ha="center", va="center", fontsize=11,
                     fontweight="bold", color=color)

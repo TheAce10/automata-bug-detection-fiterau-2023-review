@@ -1,4 +1,4 @@
-# Automata-Based Protocol Bug Detection — Paper #8 Replication
+# Automata-Based Protocol Bug Detection: Paper #8 Replication
 
 **COE 576 Networks and Web Security | End-of-Semester Assignment**
 **Student:** Bless Elikem Krapah
@@ -8,13 +8,13 @@
 ## Paper
 
 > "Automata-Based Automated Detection of State Machine Bugs in Protocol Implementations"  
-> NDSS 2023 — [ndss-symposium.org](https://www.ndss-symposium.org/ndss-paper/automata-based-automated-detection-of-state-machine-bugs-in-protocol-implementations/)
+> NDSS 2023 | [ndss-symposium.org](https://www.ndss-symposium.org/ndss-paper/automata-based-automated-detection-of-state-machine-bugs-in-protocol-implementations/)
 
 ---
 
-## What the Paper Does
+## What the paper does
 
-Protocol implementations (TLS, DTLS, SSH, …) often contain state-machine bugs — cases where the server accepts a message sequence that violates the RFC, enabling attacks. The paper automates their detection in three steps:
+Protocol implementations (TLS, DTLS, SSH, ...) often contain state-machine bugs: the server accepts a message sequence the RFC forbids, opening the door to attacks. The paper automates detection in three steps:
 
 1. **Learn** a Mealy machine model of the black-box implementation using active automata learning (L\*/TTT).
 2. **Encode** known bug classes as small DFAs (the *bug patterns*).
@@ -22,7 +22,7 @@ Protocol implementations (TLS, DTLS, SSH, …) often contain state-machine bugs 
 
 ---
 
-## Replication Scope
+## Replication scope
 
 The paper's artefact is a 10 GB VM with DTLS-Fuzzer (Java) and real protocol servers. This replication focuses on the **core algorithmic contribution** (Sections IV–VI):
 
@@ -37,7 +37,7 @@ The paper's artefact is a 10 GB VM with DTLS-Fuzzer (Java) and real protocol ser
 
 ---
 
-## Bug Patterns Implemented
+## Bug patterns implemented
 
 | ID | Paper Bug | Description |
 |---|---|---|
@@ -73,10 +73,10 @@ python visualize.py
 
 ```
 Implementation      BP1 MissingCert   BP2 MissingCertVer   BP3 CertVer<CKE
-Correct             —                 —                    —
-MissingCert         BUG               —                    —
-MissingCertVer      —                 BUG                  —
-CertVerBeforeCKE    —                 —                    BUG
+Correct             -                 -                    -
+MissingCert         BUG               -                    -
+MissingCertVer      -                 BUG                  -
+CertVerBeforeCKE    -                 -                    BUG
 ```
 
 - All bugs detected in < 5 ms (matching the paper's "within seconds" claim).
@@ -85,7 +85,7 @@ CertVerBeforeCKE    —                 —                    BUG
 
 ---
 
-## Project Structure
+## Project structure
 
 ```
 src/
@@ -114,7 +114,7 @@ visualize.py  Figures
 
 ---
 
-## Key Algorithms
+## Key algorithms
 
 **Mealy → DFA conversion (`conversion.py`):**
 For each transition `(q, i) → (o₁…oₙ, q′)`, introduce *n* auxiliary states chained by output symbols. All original Mealy states are accepting. This ensures the DFA accepts exactly the I/O sequences the implementation can produce.

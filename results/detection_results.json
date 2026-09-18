@@ -5,7 +5,7 @@
     "found": false,
     "inputs": null,
     "observed": null,
-    "time_s": 0.001268399995751679,
+    "time_s": 0.0012722999999823514,
     "am_states": 80,
     "inter_states": 0
   },
@@ -15,7 +15,7 @@
     "found": false,
     "inputs": null,
     "observed": null,
-    "time_s": 0.0011946999875362962,
+    "time_s": 0.0011976999999205873,
     "am_states": 80,
     "inter_states": 0
   },
@@ -25,7 +25,7 @@
     "found": false,
     "inputs": null,
     "observed": null,
-    "time_s": 0.0011770999990403652,
+    "time_s": 0.0011915999998564075,
     "am_states": 80,
     "inter_states": 0
   },
@@ -57,7 +57,7 @@
       "CCS_s",
       "Fin_s"
     ],
-    "time_s": 0.003463799992459826,
+    "time_s": 0.003690500000175234,
     "am_states": 71,
     "inter_states": 23
   },
@@ -67,7 +67,7 @@
     "found": false,
     "inputs": null,
     "observed": null,
-    "time_s": 0.0013182999973651022,
+    "time_s": 0.0012486000000535569,
     "am_states": 71,
     "inter_states": 0
   },
@@ -77,7 +77,7 @@
     "found": false,
     "inputs": null,
     "observed": null,
-    "time_s": 0.0010352000099373981,
+    "time_s": 0.0010561999999936234,
     "am_states": 71,
     "inter_states": 0
   },
@@ -87,7 +87,7 @@
     "found": false,
     "inputs": null,
     "observed": null,
-    "time_s": 0.001160100000561215,
+    "time_s": 0.0011686999998801184,
     "am_states": 79,
     "inter_states": 0
   },
@@ -117,7 +117,7 @@
       "CCS_s",
       "Fin_s"
     ],
-    "time_s": 0.002997600007802248,
+    "time_s": 0.0031223000000863976,
     "am_states": 79,
     "inter_states": 22
   },
@@ -127,7 +127,7 @@
     "found": false,
     "inputs": null,
     "observed": null,
-    "time_s": 0.0013847999944118783,
+    "time_s": 0.0013870000000224536,
     "am_states": 79,
     "inter_states": 0
   },
@@ -137,7 +137,7 @@
     "found": false,
     "inputs": null,
     "observed": null,
-    "time_s": 0.001259800003026612,
+    "time_s": 0.0012816999999358814,
     "am_states": 87,
     "inter_states": 0
   },
@@ -147,7 +147,7 @@
     "found": false,
     "inputs": null,
     "observed": null,
-    "time_s": 0.0012621000059880316,
+    "time_s": 0.0012844000000313827,
     "am_states": 87,
     "inter_states": 0
   },
@@ -179,7 +179,7 @@
       "CCS_s",
       "Fin_s"
     ],
-    "time_s": 0.003397599997697398,
+    "time_s": 0.003489899999976842,
     "am_states": 87,
     "inter_states": 23
   }

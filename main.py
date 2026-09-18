@@ -63,13 +63,13 @@ def run_detection(model_name, pattern_name, verbose=False):
 
     t0 = time.perf_counter()
 
-    # Step 1 — convert Mealy machine to DFA A_M
+    # Step 1: convert Mealy machine to DFA A_M
     A_M = mealy_to_dfa(model)
 
-    # Step 2 — intersect with bug-pattern DFA A_bug
+    # Step 2: intersect with bug-pattern DFA A_bug
     A_inter = intersect(A_M, pattern)
 
-    # Step 3 — Algorithm 1: backward BFS + SUT validation
+    # Step 3: Algorithm 1 backward BFS + SUT validation
     found, inputs_w, observed = detect_bug(A_inter, pattern, sut, K=2)
 
     elapsed = time.perf_counter() - t0
@@ -89,7 +89,7 @@ def run_detection(model_name, pattern_name, verbose=False):
 def fmt_seq(seq, width=70):
     """Format a sequence as a compact string."""
     if seq is None:
-        return "—"
+        return "-"
     s = " → ".join(seq)
     if len(s) > width:
         s = s[:width - 3] + "..."
@@ -98,7 +98,7 @@ def fmt_seq(seq, width=70):
 
 def main():
     print("=" * 72)
-    print("Automata-Based Protocol Bug Detection — Paper #8 Replication")
+    print("Automata-Based Protocol Bug Detection: Paper #8 Replication")
     print("NDSS 2023  |  COE 576 NWS Assignment  |  Bless Elikem Krapah")
     print("=" * 72)
     print()
@@ -138,7 +138,7 @@ def main():
     # Summary table (mirrors paper Table I structure)
     # ------------------------------------------------------------------
     print("=" * 72)
-    print("Summary Table — Bug Detection Matrix")
+    print("Summary Table: Bug Detection Matrix")
     print("=" * 72)
     header = f"{'Implementation':<22} {'BP1 MissingCert':<20} {'BP2 MissingCertVer':<22} {'BP3 CertVer<CKE':<18}"
     print(header)
@@ -149,7 +149,7 @@ def main():
         cols = []
         for pat_key in PATTERN_NAMES:
             r = row_results.get(pat_key, {})
-            marker = "BUG" if r.get("found") else "—"
+            marker = "BUG" if r.get("found") else "-"
             cols.append(f"{marker:<20}")
         print(f"{model_name:<22} {''.join(cols)}")
 
