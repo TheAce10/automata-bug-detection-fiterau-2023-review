@@ -136,12 +136,20 @@ function dfaFwd(s, cx1, cy, cx2, label, lw) {
 function dfaArcAbove(s, cx_from, cy, cx_to, peakY, label) {
   var ty = cy - DFA_R;
   var midX = (cx_from + cx_to) / 2;
+  // Staircase arc above states — all dimensions positive (avoids invalid OOXML)
+  // Right leg: vertical from peak down to cx_from circle top
   s.addShape(pres.ShapeType.line, {
-    x: cx_from, y: ty, w: midX - cx_from, h: peakY - ty,
+    x: cx_from, y: peakY, w: 0.01, h: ty - peakY,
     line: { color: C.navy, pt: 1 }
   });
+  // Top span: horizontal at peak height from cx_to to cx_from
   s.addShape(pres.ShapeType.line, {
-    x: midX, y: peakY, w: cx_to - midX, h: ty - peakY,
+    x: cx_to, y: peakY, w: cx_from - cx_to, h: 0.01,
+    line: { color: C.navy, pt: 1 }
+  });
+  // Left leg: vertical from peak down to cx_to circle top, arrow points down into circle
+  s.addShape(pres.ShapeType.line, {
+    x: cx_to, y: peakY, w: 0.01, h: ty - peakY,
     line: { color: C.navy, pt: 1, endArrowType: 'arrow', endArrowSize: 2 }
   });
   if (label) {
@@ -155,13 +163,21 @@ function dfaArcAbove(s, cx_from, cy, cx_to, peakY, label) {
 function dfaArcBelow(s, cx_from, cy, cx_to, peakY, label) {
   var by = cy + DFA_R;
   var midX = (cx_from + cx_to) / 2;
+  // Staircase arc below states — all dimensions positive
+  // Right leg: vertical from cx_from circle bottom down to peak
   s.addShape(pres.ShapeType.line, {
-    x: cx_from, y: by, w: midX - cx_from, h: peakY - by,
+    x: cx_from, y: by, w: 0.01, h: peakY - by,
     line: { color: C.navy, pt: 1 }
   });
+  // Bottom span: horizontal at peak height from cx_to to cx_from
   s.addShape(pres.ShapeType.line, {
-    x: midX, y: peakY, w: cx_to - midX, h: by - peakY,
-    line: { color: C.navy, pt: 1, endArrowType: 'arrow', endArrowSize: 2 }
+    x: cx_to, y: peakY, w: cx_from - cx_to, h: 0.01,
+    line: { color: C.navy, pt: 1 }
+  });
+  // Left leg: line from cx_to circle bottom to peak; beginArrow points up into circle
+  s.addShape(pres.ShapeType.line, {
+    x: cx_to, y: by, w: 0.01, h: peakY - by,
+    line: { color: C.navy, pt: 1, beginArrowType: 'arrow', beginArrowSize: 2 }
   });
   if (label) {
     s.addText(label, {
@@ -365,10 +381,10 @@ const RES = path.join(__dirname, '..', 'results');
   ], { x: 0.45, y: 1.54, w: 4.25, h: 1.06, valign: 'top' });
 
   card(s, 5.15, 0.82, 4.55, 1.82, C.accent);
-  s.addText('Bug Pattern DFA  A_bug', {
-    x: 5.3, y: 0.88, w: 4.25, h: 0.32,
-    color: C.primary, fontSize: 13.5, bold: true
-  });
+  s.addText([
+    para('Bug Pattern DFA  A', { color: C.primary, fontSize: 13.5, bold: true }),
+    para('bug', { color: C.primary, fontSize: 10, bold: true, subScript: true }),
+  ], { x: 5.3, y: 0.88, w: 4.25, h: 0.32 });
   s.addText('A = (Σ, Q, q₀, Δ, F)', {
     x: 5.3, y: 1.23, w: 4.25, h: 0.26,
     color: C.navy, fontSize: 11, fontFace: 'Courier New'
@@ -449,22 +465,27 @@ const RES = path.join(__dirname, '..', 'results');
 {
   const s = pres.addSlide();
   bgRect(s);
-  headerBand(s, 'Converting M to DFA A_M (Section VI)');
+  headerBand(s, [
+    para('Converting M to DFA A', { color: C.white, fontSize: 21, bold: true }),
+    para('M', { color: C.white, fontSize: 14, bold: true, subScript: true }),
+    para(' (Section VI)', { color: C.white, fontSize: 21, bold: true }),
+  ]);
 
-  s.addText(
-    'A_M accepts all I/O traces M can produce. Both operands require the same alphabet Σ = I ∪ O for intersection.',
-    { x: 0.4, y: 0.82, w: 9.2, h: 0.34, color: C.navy, fontSize: 11 }
-  );
+  s.addText([
+    para('A', { color: C.navy, fontSize: 11 }),
+    para('M', { color: C.navy, fontSize: 8, subScript: true }),
+    para(' accepts all I/O traces M can produce. Both operands require the same alphabet Σ = I ∪ O for intersection.', { color: C.navy, fontSize: 11 }),
+  ], { x: 0.4, y: 0.82, w: 9.2, h: 0.34 });
 
   // Column headers
   s.addText('Mealy machine  M', {
     x: 0.3, y: 1.20, w: 3.90, h: 0.26,
     color: C.primary, fontSize: 11.5, bold: true, align: 'center'
   });
-  s.addText('DFA  A_M', {
-    x: 4.78, y: 1.20, w: 4.82, h: 0.26,
-    color: C.primary, fontSize: 11.5, bold: true, align: 'center'
-  });
+  s.addText([
+    para('DFA  A', { color: C.primary, fontSize: 11.5, bold: true }),
+    para('M', { color: C.primary, fontSize: 9, bold: true, subScript: true }),
+  ], { x: 4.78, y: 1.20, w: 4.82, h: 0.26, align: 'center' });
 
   var mapRows = [
     { m: 'I, O  (input & output alphabets)',         hl: false, am: 'Σ = I ∪ O  (same combined alphabet)' },
@@ -498,10 +519,11 @@ const RES = path.join(__dirname, '..', 'results');
     'Chain example: (q, i) with output o₁ o₂ →  q →[i]→ aux₁ →[o₁]→ aux₂ →[o₂]→ q\'   (q, q’ ∈ F;  aux states not in F)',
     { x: 0.4, y: 4.74, w: 9.2, h: 0.28, color: C.navy, fontSize: 10 }
   );
-  s.addText('Replication: |A_M| = 71–87 states for our mock DTLS models', {
-    x: 0.4, y: 5.07, w: 9.2, h: 0.22,
-    color: C.muted, fontSize: 9.5, italic: true
-  });
+  s.addText([
+    para('Replication: |A', { color: C.muted, fontSize: 9.5, italic: true }),
+    para('M', { color: C.muted, fontSize: 7, subScript: true, italic: true }),
+    para('| = 71–87 states for our mock DTLS models', { color: C.muted, fontSize: 9.5, italic: true }),
+  ], { x: 0.4, y: 5.07, w: 9.2, h: 0.22 });
 
   footer(s, 6);
 }
@@ -512,12 +534,19 @@ const RES = path.join(__dirname, '..', 'results');
 {
   const s = pres.addSlide();
   bgRect(s);
-  headerBand(s, 'DFA Intersection: A\u2229 = A_M \u2229 A_bug (Section IV)');
+  headerBand(s, [
+    para('DFA Intersection: A\u2229 = A', { color: C.white, fontSize: 21, bold: true }),
+    para('M', { color: C.white, fontSize: 14, bold: true, subScript: true }),
+    para(' \u2229 A', { color: C.white, fontSize: 21, bold: true }),
+    para('bug', { color: C.white, fontSize: 14, bold: true, subScript: true }),
+    para(' (Section IV)', { color: C.white, fontSize: 21, bold: true }),
+  ]);
 
-  s.addText(
-    'A sequence is a bug witness iff it is both producible by M and accepted by A_bug.',
-    { x: 0.4, y: 0.82, w: 9.2, h: 0.35, color: C.navy, fontSize: 12 }
-  );
+  s.addText([
+    para('A sequence is a bug witness iff it is both producible by M and accepted by A', { color: C.navy, fontSize: 12 }),
+    para('bug', { color: C.navy, fontSize: 9, subScript: true }),
+    para('.', { color: C.navy, fontSize: 12 }),
+  ], { x: 0.4, y: 0.82, w: 9.2, h: 0.35 });
 
   codeBox(s,
     'Cross-product construction:\n\n' +
@@ -681,7 +710,9 @@ const RES = path.join(__dirname, '..', 'results');
     para('3 bugs detected, 0 false positives', { fontSize: 11, color: C.navy, paraSpaceAfter: 10 }),
     para('Detection time per pair', { fontSize: 11, bold: true, color: C.primary, paraSpaceAfter: 4 }),
     para('1\u20134 ms  (matches \u201cwithin seconds\u201d)', { fontSize: 11, color: C.navy, paraSpaceAfter: 10 }),
-    para('|A_M| = 71\u201387 states', { fontSize: 11, color: C.primary, paraSpaceAfter: 3 }),
+    para('|A', { fontSize: 11, color: C.primary }),
+    para('M', { fontSize: 8, color: C.primary, subScript: true }),
+    para('| = 71\u201387 states', { fontSize: 11, color: C.primary, paraSpaceAfter: 3 }),
     para('|A\u2229| = 22\u201323 states (after trim)', { fontSize: 11, color: C.primary, paraSpaceAfter: 10 }),
     para('Shortest witness lengths:', { fontSize: 11, bold: true, color: C.primary, paraSpaceAfter: 4 }),
     para('BP1:  7 inputs,  15 I/O symbols', { fontSize: 10.5, color: C.navy, paraSpaceAfter: 3 }),
