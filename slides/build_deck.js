@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 const pptxgen = require('pptxgenjs');
 const path    = require('path');
 
@@ -86,6 +86,89 @@ function circle(slide, x, y, d, label) {
     x: x, y: y, w: d, h: d,
     color: C.white, fontSize: 18, bold: true, align: 'center', valign: 'middle'
   });
+}
+
+// ── DFA state-machine drawing helpers ────────────────────────────────────
+var DFA_R = 0.185;   // state circle radius (inches)
+
+function dfaState(s, cx, cy, label, isAccepting) {
+  if (isAccepting) {
+    s.addShape(pres.ShapeType.ellipse, {
+      x: cx - DFA_R - 0.05, y: cy - DFA_R - 0.05,
+      w: (DFA_R + 0.05) * 2, h: (DFA_R + 0.05) * 2,
+      fill: { color: C.bg }, line: { color: C.primary, pt: 1 }
+    });
+  }
+  s.addShape(pres.ShapeType.ellipse, {
+    x: cx - DFA_R, y: cy - DFA_R, w: DFA_R * 2, h: DFA_R * 2,
+    fill: { color: isAccepting ? C.primary : C.white },
+    line: { color: C.primary, pt: 1.5 }
+  });
+  s.addText(label, {
+    x: cx - DFA_R, y: cy - DFA_R, w: DFA_R * 2, h: DFA_R * 2,
+    color: isAccepting ? C.white : C.primary,
+    fontSize: 6, bold: true, align: 'center', valign: 'middle', margin: 0
+  });
+}
+
+function dfaStart(s, cx, cy) {
+  s.addShape(pres.ShapeType.line, {
+    x: cx - DFA_R - 0.18, y: cy, w: 0.18, h: 0,
+    line: { color: C.primary, pt: 1.5, endArrowType: 'arrow', endArrowSize: 2 }
+  });
+}
+
+function dfaFwd(s, cx1, cy, cx2, label, lw) {
+  var sx = cx1 + DFA_R, ex = cx2 - DFA_R;
+  s.addShape(pres.ShapeType.line, {
+    x: sx, y: cy, w: ex - sx, h: 0,
+    line: { color: C.primary, pt: 1, endArrowType: 'arrow', endArrowSize: 2 }
+  });
+  if (label) {
+    var w = lw || 0.76;
+    s.addText(label, {
+      x: (sx + ex) / 2 - w / 2, y: cy - 0.19, w: w, h: 0.17,
+      color: C.navy, fontSize: 6.5, align: 'center', margin: 0
+    });
+  }
+}
+
+function dfaArcAbove(s, cx_from, cy, cx_to, peakY, label) {
+  var ty = cy - DFA_R;
+  var midX = (cx_from + cx_to) / 2;
+  s.addShape(pres.ShapeType.line, {
+    x: cx_from, y: ty, w: midX - cx_from, h: peakY - ty,
+    line: { color: C.navy, pt: 1 }
+  });
+  s.addShape(pres.ShapeType.line, {
+    x: midX, y: peakY, w: cx_to - midX, h: ty - peakY,
+    line: { color: C.navy, pt: 1, endArrowType: 'arrow', endArrowSize: 2 }
+  });
+  if (label) {
+    s.addText(label, {
+      x: midX - 0.33, y: peakY - 0.17, w: 0.66, h: 0.16,
+      color: C.navy, fontSize: 6.5, align: 'center', margin: 0
+    });
+  }
+}
+
+function dfaArcBelow(s, cx_from, cy, cx_to, peakY, label) {
+  var by = cy + DFA_R;
+  var midX = (cx_from + cx_to) / 2;
+  s.addShape(pres.ShapeType.line, {
+    x: cx_from, y: by, w: midX - cx_from, h: peakY - by,
+    line: { color: C.navy, pt: 1 }
+  });
+  s.addShape(pres.ShapeType.line, {
+    x: midX, y: peakY, w: cx_to - midX, h: by - peakY,
+    line: { color: C.navy, pt: 1, endArrowType: 'arrow', endArrowSize: 2 }
+  });
+  if (label) {
+    s.addText(label, {
+      x: midX - 0.33, y: peakY + 0.01, w: 0.66, h: 0.16,
+      color: C.navy, fontSize: 6.5, align: 'center', margin: 0
+    });
+  }
 }
 
 const RES = path.join(__dirname, '..', 'results');
@@ -226,63 +309,12 @@ const RES = path.join(__dirname, '..', 'results');
 {
   const s = pres.addSlide();
   bgRect(s);
-  headerBand(s, 'Key Formalisms');
-
-  // Left card: Mealy Machine
-  card(s, 0.3, 0.82, 4.55, 4.4, C.light);
-  s.addText('Mealy Machine  M', {
-    x: 0.45, y: 0.88, w: 4.25, h: 0.35,
-    color: C.primary, fontSize: 14, bold: true
-  });
-  s.addText('M = (I, O, Q, q\u2080, \u03b4, \u03bb)', {
-    x: 0.45, y: 1.28, w: 4.25, h: 0.3,
-    color: C.navy, fontSize: 12, fontFace: 'Courier New'
-  });
-  s.addText([
-    para('I  = input alphabet (client \u2192 server)', { fontSize: 11, color: C.primary, paraSpaceAfter: 3 }),
-    para('O  = output alphabet (server \u2192 client)', { fontSize: 11, color: C.primary, paraSpaceAfter: 3 }),
-    para('Q  = finite set of states', { fontSize: 11, color: C.primary, paraSpaceAfter: 3 }),
-    para('q\u2080 = initial state', { fontSize: 11, color: C.primary, paraSpaceAfter: 3 }),
-    para('\u03b4  : Q \u00d7 I \u2192 Q   (transition)', { fontSize: 11, color: C.primary, paraSpaceAfter: 3 }),
-    para('\u03bb  : Q \u00d7 I \u2192 O*  (output sequence)', { fontSize: 11, color: C.primary, paraSpaceAfter: 10 }),
-    para('Obtained via active automata learning\n(L* / TTT queries to the black-box SUT)', { fontSize: 11, color: C.muted, italic: true }),
-  ], { x: 0.45, y: 1.65, w: 4.25, h: 3.4, valign: 'top' });
-
-  // Right card: Bug Pattern DFA
-  card(s, 5.15, 0.82, 4.55, 4.4, C.accent);
-  s.addText('Bug Pattern DFA  A\u1d65', {
-    x: 5.3, y: 0.88, w: 4.25, h: 0.35,
-    color: C.primary, fontSize: 14, bold: true
-  });
-  s.addText('A = (\u03a3, Q, q\u2080, \u0394, F)', {
-    x: 5.3, y: 1.28, w: 4.25, h: 0.3,
-    color: C.navy, fontSize: 12, fontFace: 'Courier New'
-  });
-  s.addText([
-    para('\u03a3  = I \u222a O   (combined alphabet)', { fontSize: 11, color: C.primary, paraSpaceAfter: 3 }),
-    para('Q  = states tracking bug progress', { fontSize: 11, color: C.primary, paraSpaceAfter: 3 }),
-    para('F  = accepting states \u2192 bug detected', { fontSize: 11, color: C.primary, paraSpaceAfter: 3 }),
-    para('\u0394  : Q \u00d7 \u03a3 \u2192 Q  (undefined \u2192 SINK)', { fontSize: 11, color: C.primary, paraSpaceAfter: 10 }),
-    para('Hand-crafted from RFC requirements', { fontSize: 11, color: C.primary, paraSpaceAfter: 3 }),
-    para('Typically just 3\u20135 states', { fontSize: 11, color: C.primary, paraSpaceAfter: 10 }),
-    para('A_bug accepts a sequence w iff w\nprovides evidence of the bug', { fontSize: 11, color: C.muted, italic: true }),
-  ], { x: 5.3, y: 1.65, w: 4.25, h: 3.4, valign: 'top' });
-
-  footer(s, 4);
-}
-
-// ────────────────────────────────────────────────────────────────────────
-// SLIDE 5 — Three-Step Pipeline
-// ────────────────────────────────────────────────────────────────────────
-{
-  const s = pres.addSlide();
-  bgRect(s);
   headerBand(s, 'The Three-Step Bug Detection Pipeline');
 
   const steps = [
     { n: '1', title: 'Learn Model',       body: 'Active automata learning\nqueries the implementation\nas a black box and infers\na Mealy machine M\n\n(L* / TTT algorithm)' },
-    { n: '2', title: 'Encode Bug Pattern', body: 'Construct a 3\u20135 state DFA\nA_bug that accepts\nexactly the I/O sequences\nthat exhibit the bug\n\n(from RFC or prior CVEs)' },
-    { n: '3', title: 'Intersect & Validate', body: 'A\u2229 = A_M \u2229 A_bug\nAlgorithm 1 extracts a\nwitness via backward BFS\nand replays on the SUT\nto confirm the bug' },
+    { n: '2', title: 'Encode Bug Pattern', body: 'Construct a 3–5 state DFA\nA_bug that accepts\nexactly the I/O sequences\nthat exhibit the bug\n\n(from RFC or prior CVEs)' },
+    { n: '3', title: 'Intersect & Validate', body: 'A∩ = A_M ∩ A_bug\nAlgorithm 1 extracts a\nwitness via backward BFS\nand replays on the SUT\nto confirm the bug' },
   ];
 
   steps.forEach(function(step, i) {
@@ -305,6 +337,109 @@ const RES = path.join(__dirname, '..', 'results');
     }
   });
 
+  footer(s, 4);
+}
+
+// ────────────────────────────────────────────────────────────────────────
+// SLIDE 5 — Key Formalisms + Bug Pattern DFAs
+// ────────────────────────────────────────────────────────────────────────
+{
+  const s = pres.addSlide();
+  bgRect(s);
+  headerBand(s, 'Key Formalisms');
+
+  // Compressed definition cards (top ~1/3 of slide)
+  card(s, 0.3, 0.82, 4.55, 1.82, C.light);
+  s.addText('Mealy Machine  M', {
+    x: 0.45, y: 0.88, w: 4.25, h: 0.32,
+    color: C.primary, fontSize: 13.5, bold: true
+  });
+  s.addText('M = (I, O, Q, q₀, δ, λ)', {
+    x: 0.45, y: 1.23, w: 4.25, h: 0.26,
+    color: C.navy, fontSize: 11, fontFace: 'Courier New'
+  });
+  s.addText([
+    para('I = inputs,  O = outputs,  Q = states', { fontSize: 10, color: C.primary, paraSpaceAfter: 2 }),
+    para('δ : transitions,  λ : output function', { fontSize: 10, color: C.primary, paraSpaceAfter: 4 }),
+    para('Learned from black-box SUT (L* / TTT)', { fontSize: 10, color: C.muted, italic: true }),
+  ], { x: 0.45, y: 1.54, w: 4.25, h: 1.06, valign: 'top' });
+
+  card(s, 5.15, 0.82, 4.55, 1.82, C.accent);
+  s.addText('Bug Pattern DFA  A_bug', {
+    x: 5.3, y: 0.88, w: 4.25, h: 0.32,
+    color: C.primary, fontSize: 13.5, bold: true
+  });
+  s.addText('A = (Σ, Q, q₀, Δ, F)', {
+    x: 5.3, y: 1.23, w: 4.25, h: 0.26,
+    color: C.navy, fontSize: 11, fontFace: 'Courier New'
+  });
+  s.addText([
+    para('Σ = I ∪ O,  F = accepting states → bug', { fontSize: 10, color: C.primary, paraSpaceAfter: 4 }),
+    para('Accepts w iff w exhibits the bug; 3–5 states', { fontSize: 10, color: C.muted, italic: true }),
+  ], { x: 5.3, y: 1.54, w: 4.25, h: 1.06, valign: 'top' });
+
+  // Divider + DFA section header
+  s.addShape(pres.ShapeType.line, {
+    x: 0.3, y: 2.74, w: 9.4, h: 0,
+    line: { color: C.border, pt: 0.75 }
+  });
+  s.addText('Bug Pattern DFAs: BP1, BP2, BP3  (hand-crafted from RFC; 3-4 states; double circle = accepting = bug detected)', {
+    x: 0.3, y: 2.80, w: 9.4, h: 0.22,
+    color: C.primary, fontSize: 9, bold: true
+  });
+
+  // DFA sub-titles
+  s.addText('BP1  Missing Certificate', {
+    x: 0.20, y: 3.06, w: 2.90, h: 0.20,
+    color: C.navy, fontSize: 8.5, bold: true, align: 'center'
+  });
+  s.addText('BP2  Missing CertVer', {
+    x: 3.50, y: 3.06, w: 2.90, h: 0.20,
+    color: C.navy, fontSize: 8.5, bold: true, align: 'center'
+  });
+  s.addText('BP3  CertVer before CKE', {
+    x: 6.75, y: 3.06, w: 3.10, h: 0.20,
+    color: C.navy, fontSize: 8.5, bold: true, align: 'center'
+  });
+
+  var yS = 4.40;   // state center y
+
+  // BP1: init --CertReq--> s1 --CCS_s--> BUG   (Cert resets s1->init)
+  dfaState(s, 0.73, yS, 'init', false);
+  dfaState(s, 1.68, yS, 's1', false);
+  dfaState(s, 2.63, yS, 'BUG', true);
+  dfaStart(s, 0.73, yS);
+  dfaFwd(s, 0.73, yS, 1.68, 'CertReq', 0.74);
+  dfaFwd(s, 1.68, yS, 2.63, 'CCS_s', 0.74);
+  dfaArcAbove(s, 1.68, yS, 0.73, 3.72, 'Cert');
+
+  // BP2: init --Cert--> s1 --CCS_s--> BUG   (CertVer resets s1->init)
+  dfaState(s, 4.08, yS, 'init', false);
+  dfaState(s, 5.03, yS, 's1', false);
+  dfaState(s, 5.98, yS, 'BUG', true);
+  dfaStart(s, 4.08, yS);
+  dfaFwd(s, 4.08, yS, 5.03, 'Cert', 0.74);
+  dfaFwd(s, 5.03, yS, 5.98, 'CCS_s', 0.74);
+  dfaArcAbove(s, 5.03, yS, 4.08, 3.72, 'CertVer');
+
+  // BP3: init --CertVer--> s1 --CKE--> s2 --CCS_s--> BUG
+  //      SH resets: s1->init (above arc), s2->init (below arc)
+  dfaState(s, 7.14, yS, 'init', false);
+  dfaState(s, 7.95, yS, 's1', false);
+  dfaState(s, 8.76, yS, 's2', false);
+  dfaState(s, 9.57, yS, 'BUG', true);
+  dfaStart(s, 7.14, yS);
+  dfaFwd(s, 7.14, yS, 7.95, 'CertVer', 0.60);
+  dfaFwd(s, 7.95, yS, 8.76, 'CKE', 0.60);
+  dfaFwd(s, 8.76, yS, 9.57, 'CCS_s', 0.60);
+  dfaArcAbove(s, 7.95, yS, 7.14, 3.65, 'SH');
+  dfaArcBelow(s, 8.76, yS, 7.14, 4.97, 'SH');
+
+  s.addText('BP3: s1 = certver  |  s2 = cke_after  |  SH = renegotiation reset  |  self-loops on other symbols not shown', {
+    x: 6.65, y: 5.22, w: 3.20, h: 0.18,
+    color: C.muted, fontSize: 5.5, align: 'center'
+  });
+
   footer(s, 5);
 }
 
@@ -314,43 +449,58 @@ const RES = path.join(__dirname, '..', 'results');
 {
   const s = pres.addSlide();
   bgRect(s);
-  headerBand(s, 'Converting M to DFA A\u1d40 (Section VI)');
+  headerBand(s, 'Converting M to DFA A_M (Section VI)');
 
   s.addText(
-    'DFA intersection requires both operands over the same alphabet \u03a3 = I \u222a O.\n' +
-    'The Mealy machine must be converted to A_M that accepts all I/O sequences M can produce.',
-    { x: 0.4, y: 0.82, w: 9.2, h: 0.6, color: C.navy, fontSize: 11.5 }
+    'A_M accepts all I/O traces M can produce. Both operands require the same alphabet Σ = I ∪ O for intersection.',
+    { x: 0.4, y: 0.82, w: 9.2, h: 0.34, color: C.navy, fontSize: 11 }
   );
 
-  codeBox(s,
-    'For each (q, i) with \u03bb(q,i) = o\u2081 o\u2082 \u2026 o\u2099  (n \u2265 1):\n' +
-    '  introduce aux states  aux(q,i,0), aux(q,i,1), \u2026, aux(q,i,n-1)\n\n' +
-    '  \u0394(q,          i)          = aux(q,i,0)\n' +
-    '  \u0394(aux(q,i,k), o_{k+1})    = aux(q,i,k+1)   for k < n-1\n' +
-    '  \u0394(aux(q,i,n-1), o_n)      = \u03b4(q,i)          (original Mealy target)\n\n' +
-    'For each (q, i) with \u03bb(q,i) = \u03b5 (empty output):\n' +
-    '  \u0394(q, i)  =  \u03b4(q,i)            (direct transition)\n\n' +
-    'Accepting states F_M = Q  (all original Mealy states)\n' +
-    'Undefined transitions \u2192 SINK (non-accepting)',
-    0.4, 1.52, 5.7, 3.0
-  );
-
-  card(s, 6.3, 1.52, 3.4, 3.0, C.accent);
-  s.addText('Key Properties', {
-    x: 6.42, y: 1.58, w: 3.16, h: 0.3,
-    color: C.primary, fontSize: 12, bold: true
+  // Column headers
+  s.addText('Mealy machine  M', {
+    x: 0.3, y: 1.20, w: 3.90, h: 0.26,
+    color: C.primary, fontSize: 11.5, bold: true, align: 'center'
   });
-  s.addText([
-    para('L(A_M) = all valid I/O traces of M', { fontSize: 11, color: C.primary, paraSpaceAfter: 5 }),
-    para('Multi-output transitions become chains of auxiliary states', { fontSize: 11, color: C.primary, paraSpaceAfter: 5 }),
-    para('All original Mealy states are accepting', { fontSize: 11, color: C.primary, paraSpaceAfter: 5 }),
-    para('Undefined (state, input) pairs map to SINK', { fontSize: 11, color: C.primary, paraSpaceAfter: 5 }),
-    para('|A_M| grows linearly with output lengths', { fontSize: 11, color: C.muted, italic: true }),
-  ], { x: 6.42, y: 1.98, w: 3.16, h: 2.4, valign: 'top' });
+  s.addText('DFA  A_M', {
+    x: 4.78, y: 1.20, w: 4.82, h: 0.26,
+    color: C.primary, fontSize: 11.5, bold: true, align: 'center'
+  });
 
-  s.addText('Replication: |A_M| = 71\u201387 states for our mock DTLS models', {
-    x: 0.4, y: 4.62, w: 9.2, h: 0.28,
-    color: C.muted, fontSize: 10, italic: true
+  var mapRows = [
+    { m: 'I, O  (input & output alphabets)',         hl: false, am: 'Σ = I ∪ O  (same combined alphabet)' },
+    { m: 'Q  (set of states)',                        hl: false, am: 'Q ∪ Q_aux ∪ {SINK}  (original + auxiliary + dead)' },
+    { m: 'q₀  (initial state)',                  hl: false, am: 'q₀  (unchanged)' },
+    { m: 'δ : Q × I → Q  (transitions)', hl: true,  am: 'Δ encodes target state at end of Q_aux chain' },
+    { m: 'λ : Q × I → O*  (output fn)',  hl: true,  am: 'Each output symbol = one auxiliary-state step' },
+    { m: '(none — Mealy has no accepting concept)', hl: false, am: 'F = Q  (all original Mealy states accepting)' },
+  ];
+
+  mapRows.forEach(function(row, i) {
+    var y = 1.52 + i * 0.52;
+    var bg = row.hl ? C.accent : C.light;
+    card(s, 0.3, y, 3.90, 0.48, bg);
+    s.addText(row.m, {
+      x: 0.42, y: y + 0.06, w: 3.66, h: 0.36,
+      color: C.primary, fontSize: 10.5, valign: 'middle'
+    });
+    s.addShape(pres.ShapeType.line, {
+      x: 4.24, y: y + 0.24, w: 0.40, h: 0,
+      line: { color: C.muted, pt: 1.5, endArrowType: 'arrow', endArrowSize: 2 }
+    });
+    card(s, 4.78, y, 4.82, 0.48, bg);
+    s.addText(row.am, {
+      x: 4.90, y: y + 0.06, w: 4.58, h: 0.36,
+      color: C.primary, fontSize: 10.5, valign: 'middle'
+    });
+  });
+
+  s.addText(
+    'Chain example: (q, i) with output o₁ o₂ →  q →[i]→ aux₁ →[o₁]→ aux₂ →[o₂]→ q\'   (q, q’ ∈ F;  aux states not in F)',
+    { x: 0.4, y: 4.74, w: 9.2, h: 0.28, color: C.navy, fontSize: 10 }
+  );
+  s.addText('Replication: |A_M| = 71–87 states for our mock DTLS models', {
+    x: 0.4, y: 5.07, w: 9.2, h: 0.22,
+    color: C.muted, fontSize: 9.5, italic: true
   });
 
   footer(s, 6);
@@ -362,7 +512,7 @@ const RES = path.join(__dirname, '..', 'results');
 {
   const s = pres.addSlide();
   bgRect(s);
-  headerBand(s, 'DFA Intersection: A\u2229 = A\u1d40 \u2229 A\u1d65 (Section IV)');
+  headerBand(s, 'DFA Intersection: A\u2229 = A_M \u2229 A_bug (Section IV)');
 
   s.addText(
     'A sequence is a bug witness iff it is both producible by M and accepted by A_bug.',
